@@ -11,14 +11,30 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 public class JessemoodClient implements ClientModInitializer {
-    public static final SoundEvent JESUS_BELL_SOUND = Registry.register(Registries.SOUND_EVENT, Identifier.of("eternaljesus", "jesus_bell"),
-            SoundEvent.of(Identifier.of("eternaljesus", "jesus_bell")));
+    // Registering multiple sounds
+    public static final SoundEvent JESUS_BELL_SOUND = Registry.register(
+            Registries.SOUND_EVENT,
+            Identifier.of("eternaljesus", "jesus_bell"),
+            SoundEvent.of(Identifier.of("eternaljesus", "jesus_bell"))
+    );
+    
+    public static final SoundEvent ANOTHER_SOUND = Registry.register(
+            Registries.SOUND_EVENT,
+            Identifier.of("eternaljesus", "another_sound"),
+            SoundEvent.of(Identifier.of("eternaljesus", "another_sound"))
+    );
+
+    public static final SoundEvent YET_ANOTHER_SOUND = Registry.register(
+            Registries.SOUND_EVENT,
+            Identifier.of("eternaljesus", "yet_another_sound"),
+            SoundEvent.of(Identifier.of("eternaljesus", "yet_another_sound"))
+    );
 
     @Override
     public void onInitializeClient() {
-        guihandler.init();
+        guihandler.init(); // Initialize images and sounds in guihandler
         HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter counter) -> {
-        guihandler.render (context);
-    });
+            guihandler.render(context);
+        });
     }
 }
