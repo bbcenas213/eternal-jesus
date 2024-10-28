@@ -13,55 +13,83 @@ import java.util.List;
 import java.util.Random;
 
 public class guihandler {
-    private static final int NUMBEROFIMAGES=5;
+    private static final int NUMBEROFIMAGES = 5;
     private static final int DISPLAY_DURATION = 500;
-    private static long startTime = -1; // Time when the image starts displaying
+    private static long startTime = -1;
     private static long lastTime = -1;
     private static Identifier image_id = Identifier.of("eternaljesus", "textures/gui/jesus0.png");
-    private static List<Identifier> images = new ArrayList<Identifier>();
-    public static int getRandomNumberUsingNextInt(int min, int max) {
-        Random random = new Random();
-        return random.nextInt(max - min) + min;
-    }
+    private static List<Identifier> images = new ArrayList<>();
+    private static List<SoundEvent> sounds = new ArrayList<>();
+    private static final Random RANDOM = new Random();
+
     public static void init() {
+        // Load PNG images
         for (int i = 0; i < NUMBEROFIMAGES; i++) {
-            images.add(Identifier.of("eternaljesus", "textures/gui/jesus"+i+".png"));
+            images.add(Identifier.of("eternaljesus", "textures/gui/jesus" + i + ".png"));
         }
+        
+        // Placeholder for GIF frames, if applicable
+        // images.add(Identifier.of("eternaljesus", "textures/gui/jesus_frame1.png"));
+        // images.add(Identifier.of("eternaljesus", "textures/gui/jesus_frame2.png"));
+        // Add more frames if you have split GIFs into individual images
+        
+        // Load sound events into the sounds list
+        sounds.add(JessemoodClient.JESUS_BELL_SOUND);
+        sounds.add(JessemoodClient.ANOTHER_SOUND); // Replace with actual sound event
+        sounds.add(JessemoodClient.YET_ANOTHER_SOUND); // Replace with actual sound event
     }
-    public static void playLocalSound(SoundEvent soundEvent, PlayerEntity player) {
-        if (MinecraftClient.getInstance().world != null) {
+
+    private static int getRandomNumber(int min, int max) {
+        return RANDOM.nextInt(max - min) + min;
+    }
+
+    private static Identifier getRandomImage() {
+        return images.get(getRandomNumber(0, images.size()));
+    }
+
+    private static SoundEvent getRandomSound() {
+        return sounds.get(getRandomNumber(0, sounds.size()));
+    }
+
+    public static void playLocalSound(PlayerEntity player) {
+        SoundEvent soundEvent = getRandomSound();
+        if (MinecraftClient.getInstance().world != null && soundEvent != null) {
             MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().world.playSound(
-                    player,              // Player to play the sound to
-                    player.getX(),       // X position
-                    player.getY(),       // Y position
-                    player.getZ(),       // Z position
-                    soundEvent,                 // Your sound event
-                    SoundCategory.MASTER,       // Category
-                    30.0F,                       // Volume
-                    1.0F                        // Pitch
+                    player,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    soundEvent,
+                    SoundCategory.MASTER,
+                    30.0F,
+                    1.0F
             ));
         }
     }
+
+    private static void resetDisplay() {
+        image_id = getRandomImage();
+        startTime = System.currentTimeMillis();
+        lastTime = System.currentTimeMillis();
+        playLocalSound(MinecraftClient.getInstance().player);
+    }
+
     public static void display() {
-        if (MinecraftClient.getInstance().world !=null && MinecraftClient.getInstance().player != null) {
-            if (lastTime == -1 || System.currentTimeMillis() - lastTime > DISPLAY_DURATION *2) {
-                image_id = images.get(getRandomNumberUsingNextInt(0, images.size()));
-                startTime = System.currentTimeMillis();
-                lastTime = System.currentTimeMillis();
-                playLocalSound(JessemoodClient.JESUS_BELL_SOUND, MinecraftClient.getInstance().player);
+        if (MinecraftClient.getInstance().world != null && MinecraftClient.getInstance().player != null) {
+            if (lastTime == -1 || System.currentTimeMillis() - lastTime > DISPLAY_DURATION * 2) {
+                resetDisplay();
             }
         }
     }
+
     public static void render(DrawContext context) {
         if (startTime < 0 || MinecraftClient.getInstance().world == null) {
-            return; // Do not render if the display hasn't started
+            return;
         }
 
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - startTime;
-
+        long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= DISPLAY_DURATION) {
-            startTime = -1; // Reset startTime to stop rendering
+            startTime = -1;
             return;
         }
 
