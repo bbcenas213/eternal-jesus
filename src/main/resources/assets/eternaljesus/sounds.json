@@ -3,5 +3,15 @@
     "sounds": [
       "eternaljesus:jesus_bell"
     ]
+  },
+  "another_sound": {
+    "sounds": [
+      "eternaljesus:another_sound"
+    ]
+  },
+  "yet_another_sound": {
+    "sounds": [
+      "eternaljesus:yet_another_sound"
+    ]
   }
 }
